@@ -1,1 +1,435 @@
-/* You can add global styles to this file, and also import other style files */
+/* ════════════════════════════════════════════
+   Global styles — AdminLTE override + app base
+   ════════════════════════════════════════════ */
+
+/* Force our layout to take over */
+html,
+body,
+.app-body {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* ── Nuke AdminLTE's layout classes that fight us ── */
+.layout-fixed .app-sidebar,
+.sidebar-open .app-sidebar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+.layout-fixed .app-main-container,
+.sidebar-open .app-main-container {
+    margin-left: 0 !important;
+}
+
+/* ── Font ── */
+body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Smooth scrollbar ── */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+/* ── Admin LTE sidebar override ── */
+.app-sidebar.sidebar-no-expand {
+    transform: none !important;
+}
+
+/* ── Bootstrap tooltip fix ── */
+.tooltip {
+    z-index: 9999;
+}
+
+/* ════════════════════════════════════════════
+   Global App Loader (Pre-bootstrap)
+   ════════════════════════════════════════════ */
+.global-loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    z-index: 99999;
+}
+
+.global-loader {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.global-spinner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid rgba(13, 110, 253, 0.1);
+    border-top-color: #0d6efd;
+    animation: global-spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+}
+
+.global-spinner::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #20c997;
+    animation: global-spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+}
+
+.global-loader-text {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2b3452;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #0d6efd 0%, #20c997 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: global-pulse 2s infinite ease-in-out;
+}
+
+.global-loader-subtext {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: global-pulse 2s infinite ease-in-out 0.5s;
+}
+
+@keyframes global-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes global-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ════════════════════════════════════════════
+   DARK MODE SYSTEM
+   ════════════════════════════════════════════ */
+:root {
+    --bg-body-light: #f1f5f9;
+    --bg-surface-light: #ffffff;
+    --text-main-light: #1e293b;
+    --text-muted-light: #64748b;
+    --border-light: #e2e8f0;
+}
+
+body.dark-mode {
+    --bg-body-dark: #0f172a;
+    --bg-surface-dark: #1e293b;
+    --text-main-dark: #f8fafc;
+    --text-muted-dark: #94a3b8;
+    --border-dark: #334155;
+
+    background-color: var(--bg-body-dark) !important;
+    color: var(--text-main-dark) !important;
+}
+
+/* Layout overrides */
+body.dark-mode .app-main-container {
+    background: var(--bg-body-dark) !important;
+}
+
+body.dark-mode .app-sidebar {
+    background: #080f1e !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Surface overrides */
+body.dark-mode .bg-white,
+body.dark-mode .card,
+body.dark-mode .app-header,
+body.dark-mode .app-footer,
+body.dark-mode .small-box.bg-white {
+    background-color: var(--bg-surface-dark) !important;
+    border-color: var(--border-dark) !important;
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .card-header,
+body.dark-mode .list-group-item {
+    background-color: transparent !important;
+    border-color: var(--border-dark) !important;
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Typography overrides */
+body.dark-mode .text-dark,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode .breadcrumb-item.active {
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .text-muted,
+body.dark-mode .app-footer {
+    color: var(--text-muted-dark) !important;
+}
+
+body.dark-mode a.nav-link {
+    color: var(--text-main-dark) !important;
+}
+
+/* Utilities overrides */
+body.dark-mode .bg-light {
+    background-color: #0f172a !important;
+    /* Slightly darker than surface */
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .border,
+body.dark-mode .border-0,
+body.dark-mode .border-bottom,
+body.dark-mode .border-top {
+    border-color: var(--border-dark) !important;
+}
+
+body.dark-mode .shadow-sm {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Table overrides */
+body.dark-mode .table {
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .table thead th {
+    background-color: var(--bg-body-dark) !important;
+    border-color: var(--border-dark) !important;
+    color: var(--text-muted-dark) !important;
+}
+
+body.dark-mode .table td {
+    border-color: var(--border-dark) !important;
+    color: var(--text-main-dark) !important;
+    background-color: transparent !important;
+}
+
+body.dark-mode .table-hover tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-main-dark) !important;
+}
+
+/* Form controls */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: var(--bg-body-dark) !important;
+    border-color: var(--border-dark) !important;
+    color: var(--text-main-dark) !important;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background-color: var(--bg-body-dark) !important;
+    border-color: var(--primary, #0d6efd) !important;
+    color: var(--text-main-dark) !important;
+}
+
+/* Modals */
+body.dark-mode .modal-content {
+    background-color: var(--bg-surface-dark) !important;
+    border-color: var(--border-dark) !important;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: var(--border-dark) !important;
+}
+
+/* Custom UI Additions in Header */
+.theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    color: #f59e0b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover {
+    background: #e2e8f0;
+    transform: rotate(15deg) scale(1.05);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.1rem;
+}
+
+body.dark-mode .theme-toggle-btn {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #60a5fa !important;
+}
+
+body.dark-mode .theme-toggle-btn:hover {
+    background: #334155 !important;
+    transform: rotate(-15deg) scale(1.05) !important;
+}
+
+body.dark-mode .user-chip {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: var(--text-main-dark) !important;
+}
+
+/* ════════════════════════════════════════════
+   THEME TRANSITION LOADER
+   ════════════════════════════════════════════ */
+.theme-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: transition-fade-in 0.15s ease-out forwards;
+}
+
+body.dark-mode .theme-transition-overlay {
+    background: rgba(15, 23, 42, 0.4);
+}
+
+.theme-pulse-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d6efd, #20c997);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 0 0 30px rgba(13, 110, 253, 0.4);
+    animation: theme-pulse 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+body.dark-mode .theme-pulse-circle {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.4);
+    color: #f8fafc;
+}
+
+@keyframes transition-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes theme-pulse {
+    0% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.6);
+    }
+
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 25px rgba(13, 110, 253, 0);
+    }
+
+    100% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+
+body.dark-mode .theme-pulse-circle {
+    animation: theme-pulse-dark 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes theme-pulse-dark {
+    0% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+    }
+
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 30px rgba(139, 92, 246, 0);
+    }
+
+    100% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+    }
+}
+
+/* Skeleton Dark Mode Support */
+body.dark-mode .skeleton-box {
+    background-color: #334155 !important;
+    background-image: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0,
+            rgba(255, 255, 255, 0.05) 20%,
+            rgba(255, 255, 255, 0.1) 60%,
+            rgba(255, 255, 255, 0)) !important;
+}

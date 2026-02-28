@@ -1,0 +1,76 @@
+<!-- Full-screen login overlay -->
+<div class="lp-bg">
+    <!-- Animated blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="lp-card">
+
+        <!-- Top brand -->
+        <div class="lp-brand">
+            <div class="lp-logo">
+                <img src="/assets/assets/img/AdminLTELogo.png" alt="Logo" />
+            </div>
+            <span class="lp-app-name">Inventory Pro</span>
+        </div>
+
+        <!-- Headline -->
+        <div class="lp-headline">
+            <h1>Welcome back 👋</h1>
+            <p>Sign in to your workspace</p>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate class="lp-form">
+
+            <!-- Username -->
+            <div class="lp-field">
+                <label>Username</label>
+                <div class="lp-input-wrap">
+                    <i class="bi bi-person"></i>
+                    <input type="text" name="userName" placeholder="Enter your username"
+                        [(ngModel)]="loginData.userName" required #username="ngModel" autocomplete="username" />
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="lp-field">
+                <label>Password</label>
+                <div class="lp-input-wrap">
+                    <i class="bi bi-lock"></i>
+                    <input [type]="showPassword ? 'text' : 'password'" name="password" placeholder="Enter your password"
+                        [(ngModel)]="loginData.password" required #password="ngModel" autocomplete="current-password" />
+                    <button type="button" class="lp-eye" (click)="showPassword = !showPassword">
+                        <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div class="lp-error" *ngIf="errorMessage">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="lp-btn" [disabled]="loginForm.invalid || isLoading">
+                @if (isLoading) {
+                <span class="lp-spinner"></span>
+                <span>Signing in…</span>
+                } @else {
+                <span>Sign In</span>
+                <i class="bi bi-arrow-right-circle-fill"></i>
+                }
+            </button>
+
+        </form>
+
+        <!-- Footer -->
+        <p class="lp-footer">
+            No account yet?
+            <a routerLink="/register">Create one <i class="bi bi-arrow-right"></i></a>
+        </p>
+
+    </div>
+</div>

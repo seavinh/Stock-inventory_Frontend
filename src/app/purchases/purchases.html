@@ -1,0 +1,172 @@
+<div class="purchases-page">
+
+    <!-- ── Header ── -->
+    <div class="page-header">
+        <div class="header-left">
+            <h4 class="page-title"><i class="bi bi-bag-fill me-2"></i>ការទិញ (Purchases)</h4>
+            <span class="badge-count">{{ filteredPurchases.length }} ការទិញ</span>
+        </div>
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="ស្វែងរក..." [(ngModel)]="searchText" />
+            </div>
+            <button class="btn-add" (click)="onOpenForm()">
+                <i class="bi bi-plus-lg me-1"></i> ការទិញថ្មី
+            </button>
+        </div>
+    </div>
+
+    <!-- ── New Purchase Form ── -->
+    @if (showForm) {
+    <div class="form-card">
+        <div class="form-card-header">
+            🛒 ការទិញថ្មី
+        </div>
+
+        <div class="form-card-body">
+
+            <!-- Supplier Row -->
+            <div class="form-row mb-3">
+                <div class="form-group">
+                    <label>អ្នកផ្គត់ផ្គង់ <span class="required">*</span></label>
+                    <select class="form-control" [(ngModel)]="selectedSupplierId">
+                        <option value="">-- ជ្រើសរើស --</option>
+                        @for (s of supplierList; track s._id) {
+                        <option [value]="s._id">{{ s.supplierName }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="items-section">
+                <div class="items-header">
+                    <span class="items-title">📦 ផលិតផល</span>
+                    <button class="btn-add-item" (click)="addItem()">
+                        <i class="bi bi-plus-circle me-1"></i>បន្ថែមផលិតផល
+                    </button>
+                </div>
+
+                <div class="items-table-wrapper">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ផលិតផល *</th>
+                                <th>ចំនួន *</th>
+                                <th>តម្លៃដើម ($) *</th>
+                                <th>សរុប ($)</th>
+                                <th>ចំណារ</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (item of formItems; track i; let i = $index) {
+                            <tr>
+                                <td class="text-center row-num">{{ i + 1 }}</td>
+                                <td>
+                                    <select class="form-control form-control-sm" [(ngModel)]="item.productId"
+                                        (change)="onProductChange(i)">
+                                        <option value="">-- ជ្រើស --</option>
+                                        @for (p of productList; track p._id) {
+                                        <option [value]="p._id">{{ p.productName }}</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center"
+                                        [(ngModel)]="item.quantity" min="1" (input)="onQuantityOrCostChange(i)" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center"
+                                        [(ngModel)]="item.cost" min="0" step="0.01"
+                                        (input)="onQuantityOrCostChange(i)" />
+                                </td>
+                                <td class="text-center total-cell">
+                                    {{ formatCurrency(item.totalCost) }}
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="item.remarks"
+                                        placeholder="ចំណារ..." />
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn-remove-item" (click)="removeItem(i)"
+                                        [disabled]="formItems.length === 1" title="លុបជួរ">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="grand-total-label">សរុបទឹកប្រាក់ទាំងអស់</td>
+                                <td class="grand-total-value">{{ formatCurrency(grandTotal) }}</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-card-footer">
+            <button class="btn-cancel" (click)="cancelForm()">
+                <i class="bi bi-x-lg me-1"></i>បោះបង់
+            </button>
+            <button class="btn-save" (click)="onSavePurchase()">
+                <i class="bi bi-floppy me-1"></i>រក្សាទុក
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- ── Purchases Table ── -->
+    <div class="table-card">
+        <table class="purchase-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>លេខសម្គាល់</th>
+                    <th>អ្នកផ្គត់ផ្គង់</th>
+                    <th>ចំនួនផលិតផល</th>
+                    <th>តម្លៃសរុប</th>
+                    <th>កាលបរិច្ឆេទ</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of filteredPurchases; track item._id; let i = $index) {
+                <tr>
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td>
+                        <span class="purchase-id">#{{ (item._id?.slice(-6) || '').toUpperCase() }}</span>
+                    </td>
+                    <td>
+                        <div class="supplier-cell">
+                            <div class="supplier-dot"></div>
+                            {{ getSupplierName(item.supplierId) }}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="item-count">{{ item.purchaseItemId?.length || 0 }} ចំនួន</span>
+                    </td>
+                    <td>
+                        <span class="cost-badge">{{ formatCurrency(item.PurchaseCost) }}</span>
+                    </td>
+                    <td>{{ formatDate(item.createdAt) }}</td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <span class="empty-icon">🛒</span>
+                        <p>គ្មានទិន្នន័យការទិញ</p>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

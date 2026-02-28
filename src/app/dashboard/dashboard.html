@@ -1,0 +1,329 @@
+<div class="container-fluid py-4">
+  <!-- Header Row -->
+  <div class="row mb-4">
+    <div class="col-sm-6">
+      <h3 class="mb-0 fw-bold text-primary">Inventory Dashboard</h3>
+      <p class="text-muted">Real-time overview of your stocks and sales.</p>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+  <!-- SKELETON WIREFRAME VIEW -->
+  <div class="row g-3 mb-3">
+    <!-- Skeleton Small Boxes (Row 1) -->
+    @for (i of [1, 2, 3, 4]; track i) {
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-white" style="height: 140px; padding: 20px;">
+        <div class="skeleton-box skeleton-title w-50" style="height: 2.5rem; margin-bottom: 15px;"></div>
+        <div class="skeleton-box skeleton-text w-75"></div>
+        <div class="skeleton-box skeleton-icon position-absolute" style="top: 20px; right: 20px;"></div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="row g-3 mb-4">
+    <!-- Skeleton Small Boxes (Row 2) -->
+    @for (i of [1, 2, 3, 4]; track i) {
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-white" style="height: 140px; padding: 20px;">
+        <div class="skeleton-box skeleton-title w-50" style="height: 2.5rem; margin-bottom: 15px;"></div>
+        <div class="skeleton-box skeleton-text w-75"></div>
+        <div class="skeleton-box skeleton-icon position-absolute" style="top: 20px; right: 20px;"></div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Charts Skeleton -->
+  <div class="row mt-4">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4 h-100">
+        <div class="card-header bg-white border-0 py-3">
+          <div class="skeleton-box skeleton-text w-25 mb-2"></div>
+          <div class="skeleton-box skeleton-text w-50" style="height: 0.8rem;"></div>
+        </div>
+        <div class="card-body">
+          <div class="skeleton-box skeleton-chart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 mb-3" style="min-height: 380px;">
+        <div class="card-header bg-white border-0 py-3">
+          <div class="skeleton-box skeleton-text w-50 mb-2"></div>
+          <div class="skeleton-box skeleton-text w-75" style="height: 0.8rem;"></div>
+        </div>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <div class="skeleton-box rounded-circle shadow-sm" style="width: 250px; height: 250px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Skeleton -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <div class="skeleton-box skeleton-title w-25 m-0 mb-2"></div>
+        </div>
+        <div class="card-body p-4 pt-0">
+          <div class="skeleton-box skeleton-table-row bg-light w-100" style="height: 40px; margin-bottom: 15px;"></div>
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton-box skeleton-table-row w-100"></div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <!-- REAL DATA VIEW -->
+  <!-- Stats Row 1: Inventory Counts -->
+  <div class="row g-3 mb-3">
+
+    <!-- Total Products -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-primary-gradient text-white">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalProducts() }}</h3>
+          <p>Total Products</p>
+        </div>
+        <div class="icon"><i class="bi bi-box-seam"></i></div>
+        <a routerLink="/product" class="small-box-footer border-0 py-2">
+          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Categories -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#7c3aed,#a855f7);">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalCategories() }}</h3>
+          <p>Total Categories</p>
+        </div>
+        <div class="icon"><i class="bi bi-tags-fill"></i></div>
+        <a routerLink="/category" class="small-box-footer border-0 py-2">
+          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Suppliers -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#0891b2,#06b6d4);">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalSuppliers() }}</h3>
+          <p>Total Suppliers</p>
+        </div>
+        <div class="icon"><i class="bi bi-truck-flatbed"></i></div>
+        <a routerLink="/supplier" class="small-box-footer border-0 py-2">
+          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Users -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#b45309,#f59e0b);">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalUsers() }}</h3>
+          <p>Total Users</p>
+        </div>
+        <div class="icon"><i class="bi bi-person-fill-gear"></i></div>
+        <a routerLink="/user" class="small-box-footer border-0 py-2">
+          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Stats Row 2: Transactions -->
+  <div class="row g-3 mb-4">
+
+    <!-- Total Sales Value -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-success-gradient text-white">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalSalesValue() | currency:'USD':'symbol':'1.0-2' }}</h3>
+          <p>Total Revenue</p>
+        </div>
+        <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <a routerLink="/sale" class="small-box-footer border-0 py-2">
+          View Sales <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Sales Count -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#059669,#34d399);">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalSalesCount() }}</h3>
+          <p>Total Sales</p>
+        </div>
+        <div class="icon"><i class="bi bi-receipt"></i></div>
+        <a routerLink="/sale" class="small-box-footer border-0 py-2">
+          View Sales <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Purchase Cost -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-warning-gradient text-white">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ totalPurchaseCost() | currency:'USD':'symbol':'1.0-2' }}</h3>
+          <p>Inventory Investment</p>
+        </div>
+        <div class="icon"><i class="bi bi-cart-check"></i></div>
+        <a routerLink="/purchases" class="small-box-footer border-0 py-2">
+          View Purchases <i class="bi bi-arrow-right-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div class="col-lg-3 col-sm-6">
+      <div class="small-box shadow-sm border-0 bg-danger-gradient text-white">
+        <div class="inner p-3">
+          <h3 class="fw-bold">{{ lowStockCount() }}</h3>
+          <p>Low Stock Items</p>
+        </div>
+        <div class="icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <a href="#low-stock-table" class="small-box-footer border-0 py-2">
+          Take Action <i class="bi bi-arrow-down-circle ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row mt-4">
+
+    <!-- Sales vs Purchases Area Chart -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4 h-100">
+        <div class="card-header bg-white border-0 py-3">
+          <h5 class="card-title fw-bold mb-0">Financial Trends</h5>
+          <span class="text-muted small">Sales vs Purchases over time</span>
+        </div>
+        <div class="card-body">
+          <div id="revenue-chart" style="min-height: 350px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-4">
+
+      <!-- Stock Overview Donut Chart -->
+      <div class="card shadow-sm border-0 mb-3" style="min-height: 380px;">
+        <div class="card-header bg-white border-0 py-3">
+          <h5 class="card-title fw-bold mb-0">Stock Overview</h5>
+          <span class="text-muted small">In-stock vs Low vs Out</span>
+        </div>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <div id="stock-donut-chart" style="width: 100%; display: flex; justify-content: center;"></div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white border-0 py-3">
+          <h5 class="card-title fw-bold mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <a routerLink="/product" class="list-group-item list-group-item-action border-0 py-3">
+              <i class="bi bi-plus-circle text-primary me-3"></i> Add New Product
+            </a>
+            <a routerLink="/sale" class="list-group-item list-group-item-action border-0 py-3">
+              <i class="bi bi-receipt text-success me-3"></i> Record New Sale
+            </a>
+            <a routerLink="/purchases" class="list-group-item list-group-item-action border-0 py-3">
+              <i class="bi bi-truck text-warning me-3"></i> Log New Purchase
+            </a>
+            <a routerLink="/supplier" class="list-group-item list-group-item-action border-0 py-3">
+              <i class="bi bi-people text-info me-3"></i> Manage Suppliers
+            </a>
+            <a routerLink="/category" class="list-group-item list-group-item-action border-0 py-3">
+              <i class="bi bi-tags me-3" style="color:#7c3aed"></i> Manage Categories
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Low Stock Table -->
+  <div class="row mt-2" id="low-stock-table">
+    <div class="col-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title fw-bold mb-0 text-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Low Stock Alerts
+          </h5>
+          <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">
+            {{ lowStockCount() }} item(s) need restock
+          </span>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light text-muted small">
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Current Stock</th>
+                  <th>Price</th>
+                  <th class="text-end pe-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of lowStockProducts(); track item._id; let i = $index) {
+                <tr>
+                  <td class="ps-4 text-muted">{{ i + 1 }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="bg-light rounded p-2 me-3">
+                        <i class="bi bi-box text-secondary"></i>
+                      </div>
+                      <span class="fw-semibold">{{ item.productName }}</span>
+                    </div>
+                  </td>
+                  <td><span class="badge bg-light text-dark px-2 py-1">{{ item.categoryId }}</span></td>
+                  <td>
+                    <span class="text-danger fw-bold">{{ item.stockQuantity }}</span>
+                    <div class="progress mt-1" style="height: 4px; width: 60px;">
+                      <div class="progress-bar bg-danger" [style.width]="(item.stockQuantity / 10) * 100 + '%'"></div>
+                    </div>
+                  </td>
+                  <td>{{ item.price | currency }}</td>
+                  <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Restock</button>
+                  </td>
+                </tr>
+                } @empty {
+                <tr>
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="bi bi-check-circle text-success fs-1 d-block mb-3"></i>
+                    All stock levels are healthy!
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

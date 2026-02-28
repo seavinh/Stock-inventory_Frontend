@@ -1,0 +1,303 @@
+<div class="app-content">
+    <div class="container-fluid">
+
+        <!-- ── Header ── -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-6 d-flex gap-2">
+                <button class="btn-tab" [class.active]="activeView() === 'list'" (click)="switchView('list')">
+                    <i class="bi bi-list-ul me-1"></i> Sales List
+                </button>
+                <button class="btn-tab" [class.active]="activeView() === 'pos'" (click)="switchView('pos')">
+                    <i class="bi bi-cart-plus-fill me-1"></i> New Sale (POS)
+                </button>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                @if (activeView() === 'list') {
+                <div class="input-container">
+                    <input class="input" type="text" placeholder="Search sales..."
+                        (input)="saleSearch.set($any($event.target).value)" />
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- ════════════════════ SALES LIST VIEW ════════════════════ -->
+        @if (activeView() === 'list') {
+        <div class="row">
+            <div class="col-12">
+                @if (isLoading()) {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Loading sales...</p>
+                </div>
+                } @else {
+                <table class="table table-striped table-hover">
+                    <thead align="center">
+                        <tr class="bg-dark">
+                            <th class="text-black">#</th>
+                            <th class="text-black">Date</th>
+                            <th class="text-black">Items</th>
+                            <th class="text-black">Payment</th>
+                            <th class="text-black">Total</th>
+                            <th class="text-black">Remark</th>
+                            <th class="text-black">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (sale of filteredSales(); track sale._id; let i = $index) {
+                        <tr align="center">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ sale.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                            <td>
+                                <span class="badge bg-secondary rounded-pill">
+                                    {{ (sale.saleItemId || []).length }} item(s)
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge" [class.payment-cash]="sale.paymentType === 'cash'"
+                                    [class.payment-qr]="sale.paymentType === 'qr'">
+                                    <i class="bi" [class.bi-cash-coin]="sale.paymentType === 'cash'"
+                                        [class.bi-qr-code]="sale.paymentType === 'qr'"></i>
+                                    {{ sale.paymentType | uppercase }}
+                                </span>
+                            </td>
+                            <td class="fw-bold text-success">{{ (sale.salePrice || 0) | currency }}</td>
+                            <td class="text-muted small">{{ sale.remark || '—' }}</td>
+                            <td>
+                                <div style="display: flex; gap: 8px; justify-content: center;">
+                                    <button class="edit-button" (click)="viewSaleDetails(sale)" title="View Details">
+                                        <i class="bi bi-eye-fill" style="color:white; font-size:14px;"></i>
+                                    </button>
+                                    <button class="delete-button" (click)="deleteSale(sale)" title="Delete">
+                                        <svg class="delete-svgIcon" viewBox="0 0 448 512">
+                                            <path
+                                                d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <span style="font-size:3rem">🛒</span>
+                                <p class="mb-0 text-muted">គ្មានទិន្នន័យការលក់</p>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- ════════════════════ POS VIEW ════════════════════ -->
+        @if (activeView() === 'pos') {
+        <div class="row g-3">
+
+            <!-- LEFT: Product Grid -->
+            <div class="col-lg-7">
+                <div class="pos-panel h-100">
+                    <div class="pos-panel-header">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>Select Products
+                        <div class="ms-auto">
+                            <input class="pos-search" type="text" placeholder="🔍 Search product..."
+                                (input)="searchProducts($event)" />
+                        </div>
+                    </div>
+                    <div class="product-grid">
+                        @for (product of filteredProducts(); track product._id) {
+                        <div class="product-card" [class.out-of-stock]="product.stockQuantity <= 0"
+                            (click)="addToCart(product)">
+                            <div class="product-img-wrap">
+                                <img [src]="getProductImage(product)" [alt]="product.productName"
+                                    onerror="this.src='/assets/assets/img/AdminLTELogo.png'" />
+                                @if (product.stockQuantity <= 0) { <div class="out-of-stock-badge">OUT OF STOCK
+                            </div>
+                            } @else if (product.stockQuantity < 10) { <div class="low-stock-badge">LOW: {{
+                                product.stockQuantity }}
+                        </div>
+                        }
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">{{ product.productName }}</div>
+                        <div class="product-price">${{ product.price.toFixed(2) }}</div>
+                        <div class="product-stock text-muted small">Stock: {{ product.stockQuantity }}</div>
+                    </div>
+                </div>
+                } @empty {
+                <div class="col-12 text-center py-5 text-muted">
+                    No products found
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Cart & Checkout -->
+    <div class="col-lg-5">
+        <div class="pos-panel h-100 d-flex flex-column">
+            <div class="pos-panel-header">
+                <i class="bi bi-cart-fill me-2"></i>Cart
+                <span class="badge bg-primary rounded-pill ms-2">{{ cartCount() }}</span>
+                @if (cart().length > 0) {
+                <button class="btn btn-sm btn-outline-danger ms-auto" (click)="clearCart()">
+                    <i class="bi bi-trash3"></i> Clear
+                </button>
+                }
+            </div>
+
+            <!-- Cart Items -->
+            <div class="cart-items flex-grow-1">
+                @if (cart().length === 0) {
+                <div class="empty-cart">
+                    <i class="bi bi-cart-x"></i>
+                    <p>Cart is empty<br><small>Click a product to add</small></p>
+                </div>
+                } @else {
+                @for (item of cart(); track item.product._id; let i = $index) {
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">{{ item.product.productName }}</div>
+                        <div class="cart-item-price">${{ item.product.price.toFixed(2) }} each</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="qty-btn" (click)="updateQty(i, item.quantity - 1)">−</button>
+                        <input class="qty-input" type="number" [value]="item.quantity" min="1"
+                            [max]="item.product.stockQuantity" (change)="updateQty(i, +$any($event.target).value)" />
+                        <button class="qty-btn" (click)="updateQty(i, item.quantity + 1)">+</button>
+                    </div>
+                    <div class="cart-item-total">${{ item.totalPrice.toFixed(2) }}</div>
+                    <button class="cart-remove" (click)="removeFromCart(i)">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                }
+                }
+            </div>
+
+            <!-- Payment & Checkout -->
+            <div class="checkout-panel">
+                <!-- Payment Type -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Payment Method</label>
+                    <div class="d-flex gap-2">
+                        <button class="pay-btn" [class.active]="paymentType() === 'cash'"
+                            (click)="paymentType.set('cash')">
+                            <i class="bi bi-cash-coin me-1"></i> Cash
+                        </button>
+                        <button class="pay-btn" [class.active]="paymentType() === 'qr'" (click)="paymentType.set('qr')">
+                            <i class="bi bi-qr-code me-1"></i> QR Code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Amount Paid (Cash only) -->
+                @if (paymentType() === 'cash') {
+                <div class="mb-2">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Amount Received ($)</label>
+                    <input type="number" class="form-control" [value]="amountPaid()"
+                        (input)="amountPaid.set(+$any($event.target).value)" placeholder="0.00" min="0" step="0.01" />
+                    @if (amountPaid() > 0) {
+                    <div class="change-display mt-1" [class.negative]="change() < 0">
+                        Change: <b>${{ change().toFixed(2) }}</b>
+                        @if (change() < 0) { <span class="text-danger ms-1">(Insufficient!)</span> }
+                    </div>
+                    }
+                </div>
+                }
+
+                <!-- Remark -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Remark</label>
+                    <input type="text" class="form-control" [value]="remark()"
+                        (input)="remark.set($any($event.target).value)" placeholder="Optional note..." />
+                </div>
+
+                <!-- Total & Checkout -->
+                <div class="total-row">
+                    <span>Total</span>
+                    <span class="total-amount">${{ cartTotal().toFixed(2) }}</span>
+                </div>
+                <button class="checkout-btn" [disabled]="cart().length === 0 || isLoading()" (click)="checkout()">
+                    @if (isLoading()) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>Processing...
+                    } @else {
+                    <i class="bi bi-check-circle-fill me-2"></i>Confirm Sale — ${{ cartTotal().toFixed(2) }}
+                    }
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+}
+
+</div>
+</div>
+
+<!-- ════════════════════ BAKONG QR PAYMENT MODAL (PREMIUM) ════════════════════ -->
+@if (showQRModal()) {
+<div class="qr-modal-overlay" (click)="closeQRModal()">
+    <div class="qr-modal-card" (click)="$event.stopPropagation()">
+
+        <!-- Header with Close Button -->
+        <button class="qr-close-btn" (click)="closeQRModal()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="qr-modal-header">
+            <div class="qr-logo-container">
+                <i class="bi bi-bank"></i> <!-- Or Bakong specific logo if available -->
+            </div>
+            <h5>Bakong KHQR</h5>
+            <p>Scan to complete your payment</p>
+        </div>
+
+        <!-- Canvas and Amount -->
+        <div class="qr-canvas-wrap">
+            <canvas id="bakong-qr-canvas"></canvas>
+
+            <div class="qr-amount-badge-container">
+                <div class="qr-amount-badge">
+                    ${{ qrAmount().toFixed(2) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleek Instructions -->
+        <div class="qr-instructions">
+            <div class="instruction-step">
+                <i class="bi bi-phone"></i>
+                <p>Open your <b>Bakong</b> app</p>
+            </div>
+            <div class="instruction-step">
+                <i class="bi bi-qr-code-scan"></i>
+                <p>Tap <b>Scan</b> and scan the code</p>
+            </div>
+            <div class="instruction-step">
+                <i class="bi bi-check2-circle"></i>
+                <p>Confirm the payment of <b>${{ qrAmount().toFixed(2) }}</b></p>
+            </div>
+        </div>
+
+        <!-- Actions / Footer -->
+        <div class="qr-footer">
+            <div class="qr-auto-note">
+                <i class="bi bi-arrow-repeat spin-icon"></i> Auto-verifying payment...
+            </div>
+
+            <button class="qr-paid-btn" [disabled]="qrChecking()" (click)="verifyQRPayment(true)">
+                @if (qrChecking()) {
+                <span class="spinner-border spinner-border-sm"></span> Verifying...
+                } @else {
+                <i class="bi bi-shield-check"></i> I have paid manually
+                }
+            </button>
+        </div>
+
+    </div>
+</div>
+}

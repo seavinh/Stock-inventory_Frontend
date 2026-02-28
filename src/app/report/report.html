@@ -1,0 +1,170 @@
+<div class="report-page">
+
+    <!-- ── Header Section ── -->
+    <div class="report-header">
+        <div class="header-info">
+            <h4 class="page-title"><i class="bi bi-graph-up-arrow me-2"></i>របាយការណ៍សរុប (Business Overview)</h4>
+            <p class="page-subtitle">ទិដ្ឋភាពទូទៅនៃស្តុក ការលក់ និងការទិញរបស់អ្នក</p>
+        </div>
+
+        <div class="header-actions">
+            <!-- Period Selector -->
+            <div class="period-selector">
+                <button [class.active]="selectedPeriod === 'today'" (click)="onPeriodChange('today')">ថ្ងៃនេះ</button>
+                <button [class.active]="selectedPeriod === 'week'" (click)="onPeriodChange('week')">7
+                    ថ្ងៃចុងក្រោយ</button>
+                <button [class.active]="selectedPeriod === 'month'" (click)="onPeriodChange('month')">ខែនេះ</button>
+                <button [class.active]="selectedPeriod === 'all'" (click)="onPeriodChange('all')">ទាំងអស់</button>
+            </div>
+
+            <!-- Refresh Button -->
+            <button class="btn-refresh" (click)="refreshData()" [disabled]="isLoading">
+                <i class="bi bi-arrow-clockwise" [class.spinning]="isLoading"></i>
+                ផ្ទុកឡើងវិញ
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Scorecards Grid ── -->
+    <div class="grid-scorecards">
+        <!-- Card 1: Total Inventory Value -->
+        <div class="scorecard purple">
+            <div class="card-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="card-content">
+                <span class="card-label">តម្លៃស្តុកសរុប (Cost) <i class="bi bi-info-circle ms-1"
+                        title="តម្លៃសរុបនៃផលិតផលទាំងអស់ដែលមានក្នុងស្តុក"></i></span>
+                <h2 class="card-value">{{ formatCurrency(totalInventoryValue) }}</h2>
+            </div>
+        </div>
+
+        <!-- Card 2: Potential Revenue -->
+        <div class="scorecard blue">
+            <div class="card-icon"><i class="bi bi-piggy-bank"></i></div>
+            <div class="card-content">
+                <span class="card-label">ចំណូលរំពឹងទុក (Retail) <i class="bi bi-info-circle ms-1"
+                        title="តម្លៃលក់សរុបប្រសិនបើផលិតផលក្នុងស្តុកលក់អស់"></i></span>
+                <h2 class="card-value">{{ formatCurrency(potentialRevenue) }}</h2>
+            </div>
+        </div>
+
+        <!-- Card 3: Total Sales Revenue -->
+        <div class="scorecard green">
+            <div class="card-icon"><i class="bi bi-cart-check"></i></div>
+            <div class="card-content">
+                <span class="card-label">ការលក់សរុប ({{ selectedPeriod === 'all' ? 'គ្រប់ពេល' : 'តាមកាលកំណត់' }})</span>
+                <h2 class="card-value">{{ formatCurrency(totalSalesValue) }}</h2>
+            </div>
+        </div>
+
+        <!-- Card 4: Total Purchase Expenditure -->
+        <div class="scorecard red">
+            <div class="card-icon"><i class="bi bi-truck"></i></div>
+            <div class="card-content">
+                <span class="card-label">ការទិញសរុប ({{ selectedPeriod === 'all' ? 'គ្រប់ពេល' : 'តាមកាលកំណត់' }})</span>
+                <h2 class="card-value">{{ formatCurrency(totalPurchaseValue) }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Main Dashboard Layout ── -->
+    <div class="dashboard-body">
+
+        <!-- Left Column: Alerts & Tables -->
+        <div class="dashboard-column main-col">
+
+            <!-- Low Stock Alerts -->
+            <div class="report-card alert-card">
+                <div class="card-header">
+                    <span class="title"><i class="bi bi-exclamation-triangle-fill me-2"></i>ផលិតផលជិតអស់ពីស្តុក (Low
+                        Stock Alerts)</span>
+                    <span class="badge-alert">{{ lowStockCount }} មុខ</span>
+                </div>
+                <div class="card-body">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>ឈ្មោះផលិតផល</th>
+                                <th class="text-center">នៅសល់</th>
+                                <th class="text-end">តម្លៃដើម</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (p of lowStockProducts; track p._id) {
+                            <tr>
+                                <td><strong>{{ p.productName }}</strong></td>
+                                <td class="text-center">
+                                    <span [class]="p.stockQuantity === 0 ? 'qty-out' : 'qty-low'">
+                                        {{ p.stockQuantity }}
+                                    </span>
+                                </td>
+                                <td class="text-end">{{ formatCurrency(p.cost) }}</td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-secondary">
+                                    <i class="bi bi-check-circle-fill text-success d-block mb-2"
+                                        style="font-size: 1.5rem;"></i>
+                                    គ្មានផលិតផលជិតអស់ពីស្តុកទេ
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Stats & Distribution -->
+        <div class="dashboard-column side-col">
+
+            <!-- Stock Status Breakdown -->
+            <div class="report-card">
+                <div class="card-header">
+                    <span class="title">ស្ថានភាពស្តុក (In-Stock Status)</span>
+                </div>
+                <div class="card-body status-list">
+                    <div class="status-item">
+                        <span class="dot green"></span>
+                        <span class="label">មានក្នុងស្តុក (In Stock)</span>
+                        <span class="value">{{ inStockCount }}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="dot yellow"></span>
+                        <span class="label">ជិតអស់ (Low Stock)</span>
+                        <span class="value">{{ lowStockCount }}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="dot red"></span>
+                        <span class="label">អស់ពីស្តុក (Out Stock)</span>
+                        <span class="value">{{ outOfStockCount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="report-card">
+                <div class="card-header">
+                    <span class="title">របាយការណ៍តាមប្រភេទ (ByCategory)</span>
+                </div>
+                <div class="card-body">
+                    <div class="category-list">
+                        @for (cat of categoryStats; track cat.name) {
+                        <div class="category-item">
+                            <span class="cat-name">{{ cat.name }}</span>
+                            <div class="progress-container">
+                                <div class="progress-bar"
+                                    [style.width.%]="totalProducts > 0 ? (cat.count / totalProducts) * 100 : 0"></div>
+                            </div>
+                            <span class="cat-count">{{ cat.count }}</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

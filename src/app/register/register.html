@@ -1,0 +1,85 @@
+<div class="auth-wrapper">
+    <div class="auth-container shadow-2xl">
+        <!-- Left Side: Visual/Branding -->
+        <div class="auth-visual">
+            <div class="visual-content">
+                <img src="/assets/assets/img/AdminLTELogo.png" alt="Logo" class="brand-logo" />
+                <h2 class="brand-title">Inventory Pro</h2>
+                <p class="brand-subtitle">Streamline your operations with our modern inventory management solution.</p>
+                <div class="glass-orb orb-1"></div>
+                <div class="glass-orb orb-2"></div>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="auth-form-container">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Join us to start managing your inventory efficiently.</p>
+            </div>
+
+            <form (ngSubmit)="onRegister()" #registerForm="ngForm" class="premium-form">
+
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-person"></i>
+                        <input type="text" id="username" name="userName" placeholder="Choose a username"
+                            [(ngModel)]="registerData.userName" required #username="ngModel" />
+                    </div>
+                    <span class="error-msg" *ngIf="username.invalid && (username.dirty || username.touched)">
+                        Username is required
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-telephone"></i>
+                        <input type="text" id="phone" name="phoneNumber" placeholder="Enter your phone number"
+                            [(ngModel)]="registerData.phoneNumber" required #phone="ngModel" />
+                    </div>
+                    <span class="error-msg" *ngIf="phone.invalid && (phone.dirty || phone.touched)">
+                        Phone number is required
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Create a password"
+                            [(ngModel)]="registerData.password" required #password="ngModel" />
+                    </div>
+                    <span class="error-msg" *ngIf="password.invalid && (password.dirty || password.touched)">
+                        Password is required
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-shield-check"></i>
+                        <input type="password" id="confirmPassword" name="confirmPassword"
+                            placeholder="Confirm your password" [(ngModel)]="registerData.confirmPassword" required
+                            #confirmPassword="ngModel" />
+                    </div>
+                </div>
+
+                <div *ngIf="errorMessage" class="error-alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>{{ errorMessage }}</span>
+                </div>
+
+                <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || isLoading">
+                    <span *ngIf="!isLoading">Register</span>
+                    <span *ngIf="isLoading" class="loader"></span>
+                </button>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <a routerLink="/login" class="link-highlight">Sign in here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
