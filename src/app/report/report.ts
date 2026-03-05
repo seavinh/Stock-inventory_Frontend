@@ -153,9 +153,15 @@ export class Report implements OnInit {
 
     // Category Stats
     this.categoryStats = categories.map(cat => {
-      const count = products.filter(p => p.categoryId === cat._id).length;
+      const count = products.filter(p => {
+        const pCatId = (typeof p.categoryId === 'object' && p.categoryId !== null)
+          ? (p.categoryId as any)._id
+          : p.categoryId;
+        return pCatId === cat._id;
+      }).length;
+
       return { name: cat.categoryName, count };
-    });
+    }).sort((a, b) => b.count - a.count); // Sort highest to lowest
   }
 
   formatCurrency(value: number): string {

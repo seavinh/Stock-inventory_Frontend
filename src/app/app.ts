@@ -1,27 +1,35 @@
 import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
-import { Component, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Component, inject, signal, PLATFORM_ID, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Userservice } from './services/userservice';
 import { filter } from 'rxjs/operators';
+import { enviroment } from '../env/enviroment';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, DatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, DatePipe, TranslateModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Inventory Management System');
   public today: Date = new Date();
   public isLoginPage = false;
+  public profileImage: string = '';
 
   private router = inject(Router);
   public userService = inject(Userservice);
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
+  private translateService = inject(TranslateService);
 
   // ── Theme State ──
   isDarkMode = signal(false);
   isSwitchingTheme = signal(false);
+
+  // ── Language State ──
+  currentLang = signal('en');
 
   // ── Sidebar collapse states (true = open) ──
   mgmtOpen = signal(true);
@@ -37,6 +45,61 @@ export class App {
     });
 
     this.initDarkMode();
+    this.initTranslate();
+  }
+
+  private initTranslate() {
+    this.translateService.addLangs(['en', 'km']);
+    if (isPlatformBrowser(this.platformId)) {
+      const savedLang = localStorage.getItem('lang') || 'en';
+      this.translateService.setDefaultLang(savedLang);
+      this.translateService.use(savedLang);
+      this.currentLang.set(savedLang);
+    } else {
+      this.translateService.setDefaultLang('en');
+      this.translateService.use('en');
+      this.currentLang.set('en');
+    }
+  }
+
+  toggleLanguage() {
+    const newLang = this.currentLang() === 'en' ? 'km' : 'en';
+    this.currentLang.set(newLang);
+    this.translateService.use(newLang);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('lang', newLang);
+    }
+  }
+
+  ngOnInit() {
+    // Reactively load user profile whenever login context changes
+    this.userService.currentUser$.subscribe(userContext => {
+      // If user logs out (userContext is null), clear image.
+      if (!userContext) {
+        this.profileImage = '';
+        return;
+      }
+
+      // If they logged in or already have a token, fetch their profile image
+      this.loadUserProfile();
+    });
+  }
+
+  loadUserProfile() {
+    this.userService.getProfile().subscribe({
+      next: (user) => {
+        if (user && user.profileImage) {
+          // Add a cache buster so that if it updates or we log in, it doesn't use a stale cached version.
+          this.profileImage = `${enviroment.apiBase.replace('/api', '')}/uploads/${user.profileImage}?t=${Date.now()}`;
+        } else {
+          this.profileImage = '';
+        }
+        this.cdr.detectChanges(); // Force angular to update layout UI immediately 
+      },
+      error: () => {
+        // Ignore errors (user might be logged out)
+      }
+    });
   }
 
   // ── Dark Mode Logic ──

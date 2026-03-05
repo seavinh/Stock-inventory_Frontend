@@ -21,35 +21,35 @@
         <li class="nav-item">
           <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
             <i class="bi bi-grid-1x2-fill"></i>
-            <span>Dashboard</span>
+            <span>{{ 'NAV.DASHBOARD' | translate }}</span>
           </a>
         </li>
 
         <!-- ══ MANAGEMENT ══ -->
         <li class="nav-section-header" (click)="toggle('mgmt')">
-          <span><i class="bi bi-layers-fill me-2"></i>Management</span>
+          <span><i class="bi bi-layers-fill me-2"></i>{{ 'NAV.MANAGEMENT' | translate }}</span>
           <i class="bi chevron" [class.bi-chevron-up]="mgmtOpen()" [class.bi-chevron-down]="!mgmtOpen()"></i>
         </li>
         @if (mgmtOpen()) {
         <li class="nav-item">
           <a routerLink="/product" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-box-seam-fill"></i><span>Products</span>
+            <i class="bi bi-box-seam-fill"></i><span>{{ 'NAV.PRODUCTS' | translate }}</span>
           </a>
         </li>
         <li class="nav-item">
           <a routerLink="/category" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-tags-fill"></i><span>Categories</span>
+            <i class="bi bi-tags-fill"></i><span>{{ 'NAV.CATEGORIES' | translate }}</span>
           </a>
         </li>
         <li class="nav-item">
           <a routerLink="/supplier" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-people-fill"></i><span>Suppliers</span>
+            <i class="bi bi-people-fill"></i><span>{{ 'NAV.SUPPLIERS' | translate }}</span>
           </a>
         </li>
         @if (isAdmin()) {
         <li class="nav-item">
           <a routerLink="/user" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-person-fill-gear"></i><span>Users</span>
+            <i class="bi bi-person-fill-gear"></i><span>{{ 'NAV.USERS' | translate }}</span>
           </a>
         </li>
         }
@@ -57,38 +57,38 @@
 
         <!-- ══ TRANSACTIONS ══ -->
         <li class="nav-section-header" (click)="toggle('txn')">
-          <span><i class="bi bi-arrow-left-right me-2"></i>Transactions</span>
+          <span><i class="bi bi-arrow-left-right me-2"></i>{{ 'NAV.TRANSACTIONS' | translate }}</span>
           <i class="bi chevron" [class.bi-chevron-up]="txnOpen()" [class.bi-chevron-down]="!txnOpen()"></i>
         </li>
         @if (txnOpen()) {
         <li class="nav-item">
           <a routerLink="/sale" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-receipt-cutoff"></i><span>Sales</span>
+            <i class="bi bi-receipt-cutoff"></i><span>{{ 'NAV.SALES' | translate }}</span>
           </a>
         </li>
         <li class="nav-item">
           <a routerLink="/purchases" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-cart-fill"></i><span>Purchases</span>
+            <i class="bi bi-cart-fill"></i><span>{{ 'NAV.PURCHASES' | translate }}</span>
           </a>
         </li>
         }
 
         <!-- ══ SYSTEM ══ -->
         <li class="nav-section-header" (click)="toggle('system')">
-          <span><i class="bi bi-cpu-fill me-2"></i>System</span>
+          <span><i class="bi bi-cpu-fill me-2"></i>{{ 'NAV.SYSTEM' | translate }}</span>
           <i class="bi chevron" [class.bi-chevron-up]="systemOpen()" [class.bi-chevron-down]="!systemOpen()"></i>
         </li>
         @if (systemOpen()) {
         <li class="nav-item">
           <a routerLink="/report" routerLinkActive="active" class="nav-link nav-sub">
-            <i class="bi bi-pie-chart-fill"></i><span>Analytics</span>
+            <i class="bi bi-pie-chart-fill"></i><span>{{ 'NAV.ANALYTICS' | translate }}</span>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a routerLink="/setting" routerLinkActive="active" class="nav-link nav-sub">
             <i class="bi bi-gear-fill"></i><span>Settings</span>
           </a>
-        </li>
+        </li> -->
         }
 
       </ul>
@@ -97,10 +97,17 @@
     <!-- Footer: Profile + Logout pinned at bottom -->
     <div class="sidebar-footer">
       <!-- Profile link -->
-      <a routerLink="/profile" class="profile-footer-link">
-        <div class="profile-footer-avatar">{{ userService.getUserId() ? '👤' : '??' }}</div>
+      <a routerLink="/profile" class="profile-footer-link text-decoration-none">
+        <div class="profile-footer-avatar me-2">
+          @if (profileImage) {
+          <img [src]="profileImage" alt="Profile" class="rounded-circle border"
+            style="width: 38px; height: 38px; object-fit: cover;">
+          } @else {
+          {{ userService.getUserId() ? '👤' : '??' }}
+          }
+        </div>
         <div class="profile-footer-info">
-          <div class="profile-footer-name">My Profile</div>
+          <div class="profile-footer-name">{{ 'NAV.PROFILE' | translate }}</div>
           <div class="profile-footer-role">{{ userService.getUserRole() || 'staff' }}</div>
         </div>
         <i class="bi bi-chevron-right ms-auto text-muted" style="font-size:0.7rem;"></i>
@@ -108,7 +115,7 @@
       <!-- Logout -->
       <button class="logout-btn mt-2" (click)="logout()">
         <i class="bi bi-box-arrow-right"></i>
-        <span>Logout</span>
+        <span>{{ 'NAV.LOGOUT' | translate }}</span>
       </button>
     </div>
 
@@ -127,12 +134,22 @@
             </a>
           </li>
           <li class="nav-item d-none d-md-block ms-2">
-            <h5 class="mb-0 fw-bold text-secondary">System Management</h5>
+            <h5 class="mb-0 fw-bold text-secondary">{{ 'NAV.SYS_MGMT' | translate }}</h5>
           </li>
         </ul>
 
         <!-- End Navbar Links -->
         <ul class="navbar-nav ms-auto align-items-center gap-3">
+
+          <!-- Language Toggle -->
+          <li class="nav-item">
+            <button
+              class="btn border-0 shadow-sm d-flex justify-content-center align-items-center fw-bold text-white fs-6"
+              (click)="toggleLanguage()" title="Change Language"
+              style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); transition: all 0.2s ease;">
+              {{ currentLang() | uppercase }}
+            </button>
+          </li>
 
           <!-- Dark Mode Toggle -->
           <li class="nav-item">
@@ -143,10 +160,15 @@
           </li>
 
           <!-- User Profile Quick Link -->
-          <li class="nav-item d-none d-sm-block">
+          <li class="nav-item d-none d-sm-block" routerLink="/profile">
             <div class="user-chip shadow-sm d-flex align-items-center gap-2 px-3 py-1 bg-light rounded-pill border">
               <span class="fw-bold text-primary">{{ userService.getUserRole() | uppercase }}</span>
+              @if (profileImage) {
+              <img [src]="profileImage" alt="Profile" class="rounded-circle border border-primary shadow-sm"
+                style="width: 32px; height: 32px; object-fit: cover;">
+              } @else {
               <i class="bi bi-person-circle fs-5 text-secondary"></i>
+              }
             </div>
           </li>
         </ul>
@@ -160,7 +182,7 @@
         <div class="container-fluid">
           <div class="row align-items-center">
             <div class="col-sm-6">
-              <h3 class="mb-0">Control Panel</h3>
+              <h3 class="mb-0">INVENTORY</h3>
             </div>
             <div class="col-sm-6">
               <nav aria-label="breadcrumb">
@@ -184,14 +206,7 @@
     </main>
 
     <!-- ── Footer ── -->
-    <footer class="app-footer text-center" *ngIf="!isLoginPage">
-      <div class="container-fluid">
-        <p class="mb-0">
-          &copy; 2025 <a href="#" class="text-primary text-decoration-none">Inventory Pro</a>.
-          Developed with <i class="bi bi-heart-fill text-danger mx-1"></i> for Excellence.
-        </p>
-      </div>
-    </footer>
+
   </div>
 
   <!-- ── Cool Quick Theme Transition Overlay ── -->

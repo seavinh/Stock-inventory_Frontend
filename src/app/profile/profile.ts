@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Userservice } from '../services/userservice';
 import Swal from 'sweetalert2';
+import { enviroment } from '../../env/enviroment';
 
 @Component({
     selector: 'app-profile',
@@ -18,6 +19,9 @@ export class Profile implements OnInit {
     user = signal<any>(null);
     isLoading = signal(true);
     isSaving = signal(false);
+
+    // Cache buster for the profile image
+    imageTimestamp = signal<number>(Date.now());
 
     // Edit form models
     form = {
@@ -118,5 +122,31 @@ export class Profile implements OnInit {
 
     getRoleBadgeClass(): string {
         return this.user()?.role === 'admin' ? 'badge-admin' : 'badge-staff';
+    }
+
+    getImageUrl(filename: string): string {
+        return `${enviroment.apiBase.replace('/api', '')}/uploads/${filename}`;
+    }
+
+    onFileSelected(event: any) {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('profileImage', file);
+
+            this.isSaving.set(true);
+            this.userService.updateProfileImage(formData).subscribe({
+                next: (res) => {
+                    this.user.set(res.user);
+                    this.imageTimestamp.set(Date.now()); // Update cache buster
+                    this.isSaving.set(false);
+                    Swal.fire({ icon: 'success', title: 'Profile Image Updated!', timer: 1500, showConfirmButton: false });
+                },
+                error: (err) => {
+                    this.isSaving.set(false);
+                    Swal.fire({ icon: 'error', title: 'Upload Failed', text: err.error?.message || 'Could not upload image.' });
+                }
+            });
+        }
     }
 }

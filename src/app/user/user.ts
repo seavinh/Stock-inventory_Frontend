@@ -10,7 +10,11 @@ interface UserData {
   password?: string;
   phoneNumber: string;
   role: string;
+  profileImage?: string;
+  isActive?: boolean;
 }
+
+import { enviroment } from '../../env/enviroment';
 
 @Component({
   selector: 'app-user',
@@ -29,6 +33,7 @@ export class User implements OnInit {
   newPassword = signal<string>('');
   newPhoneNumber = signal<string>('');
   newRole = signal<string>('staff');
+  newIsActive = signal<boolean>(true);
 
   // Edit mode signals
   editMode = signal<boolean>(false);
@@ -36,6 +41,11 @@ export class User implements OnInit {
 
   ngOnInit(): void {
     this.getAllUsers();
+  }
+
+  getImageUrl(filename?: string): string {
+    if (!filename) return '';
+    return `${enviroment.apiBase.replace('/api', '')}/uploads/${filename}`;
   }
 
   getAllUsers() {
@@ -81,6 +91,7 @@ export class User implements OnInit {
     const password = this.newPassword().trim();
     const phoneNumber = this.newPhoneNumber().trim();
     const role = this.newRole();
+    const isActive = this.newIsActive();
 
     if (!userName) {
       Swal.fire({ icon: 'warning', title: 'Validation Error', text: 'Please enter a username' });
@@ -101,6 +112,7 @@ export class User implements OnInit {
       userName,
       phoneNumber,
       role,
+      isActive,
     };
 
     // Only include password if provided
@@ -150,9 +162,10 @@ export class User implements OnInit {
     }
 
     this.newUserName.set(user.userName);
-    this.newPassword.set(''); // Don't populate password for security
+    this.newPassword.set(''); // Don't populate password, force blank field so they only type to change it
     this.newPhoneNumber.set(user.phoneNumber);
     this.newRole.set(user.role);
+    this.newIsActive.set(user.isActive !== undefined ? user.isActive : true);
     this.editMode.set(true);
     this.editingUserId.set(user._id);
     this.showAddForm.set(true);
@@ -245,6 +258,7 @@ export class User implements OnInit {
     this.newPassword.set('');
     this.newPhoneNumber.set('');
     this.newRole.set('staff');
+    this.newIsActive.set(true);
     this.editMode.set(false);
     this.editingUserId.set(null);
   }

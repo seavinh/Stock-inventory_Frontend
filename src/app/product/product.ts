@@ -5,7 +5,6 @@ import { Productservice } from '../services/productservice';
 import { Categoryservice } from '../services/categoryservice';
 import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
-import { PopupDialogComponent } from '../popup-dialog/popup-dialog';
 
 export interface ProductModel {
   _id?: string;
@@ -26,7 +25,7 @@ interface CategoryModel {
 
 @Component({
   selector: 'app-product',
-  imports: [FormsModule, CommonModule, PopupDialogComponent],
+  imports: [FormsModule, CommonModule],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })
@@ -49,10 +48,9 @@ export class Product implements OnInit {
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
   isEditMode: boolean = false;
+  isSaving: boolean = false;
+  isLoading: boolean = false;
 
-  // សម្រាប់ Popup Dialog
-  showDeletePopup = false;
-  selectedProductForDelete: ProductModel | null = null;
 
   private productservice = inject(Productservice);
   private categoryservice = inject(Categoryservice);
@@ -69,7 +67,9 @@ export class Product implements OnInit {
         this.productList = response;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('❌ Error loading products:', err)
+      error: (err) => {
+        console.error('❌ Error loading products:', err);
+      }
     });
   }
 
@@ -84,12 +84,12 @@ export class Product implements OnInit {
 
   onSaveProduct() {
     if (!this.productObj.productName?.trim()) {
-      alert('❌ សូមបញ្ចូលឈ្មោះផលិតផល');
+      Swal.fire({ icon: 'warning', title: 'Validation', text: 'សូមបញ្ចូលឈ្មោះផលិតផល' });
       return;
     }
 
     if (!this.productObj.categoryId) {
-      alert('❌ សូមជ្រើសរើសប្រភេទ');
+      Swal.fire({ icon: 'warning', title: 'Validation', text: 'សូមជ្រើសរើសប្រភេទ' });
       return;
     }
 
@@ -127,52 +127,75 @@ export class Product implements OnInit {
   }
 
   createProduct(formData: FormData) {
+    this.isSaving = true;
+    Swal.fire({
+      title: 'កំពុងរក្សាទុក...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     this.productservice.createProduct(formData).subscribe({
       next: (response) => {
-        setTimeout(() => {
-          Swal.fire({
-            title: "✅ បន្ថែមផលិតផលបានជោគជ័យ!",
-            icon: "success",
-            draggable: true
-          });
-        }, 1000);
+        this.isSaving = false;
+        Swal.fire({
+          title: "✅ បន្ថែមផលិតផលបានជោគជ័យ!",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false
+        });
         this.getAll();
         this.resetForm();
         this.closeModal();
       },
       error: (err) => {
+        this.isSaving = false;
         console.error('❌ Error creating product:', err);
         const msg = err.error?.message || 'មានបញ្ហាក្នុងការបន្ថែមផលិតផល';
-        alert(`❌ ${msg}`);
+        Swal.fire({
+          icon: "error",
+          title: "❌ មានបញ្ហាក្នុងការបន្ថែមផលិតផល",
+          text: msg
+        });
       }
     });
   }
 
   // ✅ FIXED: Now uses formData (not this.productObj) so image is uploaded correctly
-updateProduct(formData: FormData) {
-  this.productservice.updateProduct(this.productObj._id!, formData).subscribe({
-    next: (response) => {
-      setTimeout(() => {
+  updateProduct(formData: FormData) {
+    this.isSaving = true;
+    Swal.fire({
+      title: 'កំពុងកែប្រែ...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    this.productservice.updateProduct(this.productObj._id!, formData).subscribe({
+      next: (response) => {
+        this.isSaving = false;
         Swal.fire({
           title: "✅ កែប្រែផលិតផលបានជោគជ័យ!",
           icon: "success",
-          draggable: true
+          timer: 1500,
+          showConfirmButton: false
         });
-      }, 1000);
-      this.getAll();
-      this.resetForm();
-    },
-    error: (err) => {
-      console.error('❌ Error updating product:', err);
-      Swal.fire({
-        icon: "error",
-        title: "មានបញ្ហាក្នុងការកែប្រែផលិតផល",
-        text: err.error?.message || "Something went wrong!",
-        footer: '<a href="#">Why do I have this issue?</a>'
-      });
-    }
-  });
-}
+        this.getAll();
+        this.resetForm();
+        this.closeModal();
+      },
+      error: (err) => {
+        this.isSaving = false;
+        console.error('❌ Error updating product:', err);
+        Swal.fire({
+          icon: "error",
+          title: "មានបញ្ហាក្នុងការកែប្រែផលិតផល",
+          text: err.error?.message || "Something went wrong!",
+          footer: '<a href="#">Why do I have this issue?</a>'
+        });
+      }
+    });
+  }
 
 
   onFileSelected(event: any) {
@@ -232,44 +255,34 @@ updateProduct(formData: FormData) {
     event.target.onerror = null; // ✅ Prevent infinite loop if placeholder also fails
   }
 
-  // ប្រើ Popup Dialog ជំនួស confirm()
   onDeleteProduct(product: ProductModel) {
-    this.selectedProductForDelete = product;
-    this.showDeletePopup = true;
-  }
-
-  // នៅពេល confirm delete
-  onDeleteConfirmed() {
-    if (!this.selectedProductForDelete?._id) return;
-
-    this.productservice.deleteProduct(this.selectedProductForDelete._id).subscribe({
-      next: () => {
-        setTimeout(() => {
-          Swal.fire({
-            title: "✅ លុបផលិតផលបានជោគជ័យ!",
-            icon: "success",
-            draggable: true
-          });
-        }, 500);
-        this.getAll();
-        this.showDeletePopup = false;
-        this.selectedProductForDelete = null;
-      },
-      error: (err) => {
-        Swal.fire({
-          title: "❌ មានបញ្ហាក្នុងការលុបផលិតផល",
-          text: "Something went wrong!",
-          icon: "error"
+    Swal.fire({
+      title: 'តើអ្នកប្រាកដទេ?',
+      text: `តើអ្នកប្រាកដថាចង់លុបផលិតផល "${product.productName}" មែនទេ?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'បាទ, លុបចោល!',
+      cancelButtonText: 'បោះបង់',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (!product._id) return;
+        this.productservice.deleteProduct(product._id).subscribe({
+          next: () => {
+            Swal.fire({ title: '✅ លុបផលិតផលបានជោគជ័យ!', color: '#d33', icon: 'success', draggable: true });
+            this.getAll();
+          },
+          error: (err) => {
+            Swal.fire({
+              title: "❌ មានបញ្ហាក្នុងការលុបផលិតផល",
+              text: "Something went wrong!",
+              icon: "error"
+            });
+          }
         });
-        this.showDeletePopup = false;
       }
     });
-  }
-
-  // នៅពេល cancel delete
-  onDeleteCancelled() {
-    this.showDeletePopup = false;
-    this.selectedProductForDelete = null;
   }
 
   resetForm() {
@@ -297,11 +310,35 @@ updateProduct(formData: FormData) {
   }
 
   closeModal() {
+    // Attempt standard Bootstrap hide
     const modalElement = document.getElementById('exampleModal');
     if (modalElement) {
-      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
-      if (modalInstance) modalInstance.hide();
+      let modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
+      if (!modalInstance) {
+        try {
+          modalInstance = new (window as any).bootstrap.Modal(modalElement);
+        } catch (e) { }
+      }
+      if (modalInstance) {
+        modalInstance.hide();
+      }
     }
+
+    // Simulate close button click just in case
+    setTimeout(() => {
+      const closeBtn = document.querySelector('#exampleModal .btn-close') as HTMLElement;
+      if (closeBtn) closeBtn.click();
+
+      // Fallback manual DOM cleanup
+      if (modalElement) {
+        modalElement.classList.remove('show');
+        modalElement.style.display = 'none';
+      }
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    }, 50);
   }
 
   get filteredProducts(): ProductModel[] {

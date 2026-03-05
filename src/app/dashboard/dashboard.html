@@ -2,8 +2,8 @@
   <!-- Header Row -->
   <div class="row mb-4">
     <div class="col-sm-6">
-      <h3 class="mb-0 fw-bold text-primary">Inventory Dashboard</h3>
-      <p class="text-muted">Real-time overview of your stocks and sales.</p>
+      <h3 class="mb-0 fw-bold text-primary">{{ 'DASHBOARD.TITLE' | translate }}</h3>
+      <p class="text-muted">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
     </div>
   </div>
 
@@ -87,11 +87,11 @@
       <div class="small-box shadow-sm border-0 bg-primary-gradient text-white">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalProducts() }}</h3>
-          <p>Total Products</p>
+          <p>{{ 'DASHBOARD.TOTAL_PRODUCTS' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-box-seam"></i></div>
         <a routerLink="/product" class="small-box-footer border-0 py-2">
-          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_ALL' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -101,11 +101,11 @@
       <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#7c3aed,#a855f7);">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalCategories() }}</h3>
-          <p>Total Categories</p>
+          <p>{{ 'DASHBOARD.TOTAL_CATEGORIES' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-tags-fill"></i></div>
         <a routerLink="/category" class="small-box-footer border-0 py-2">
-          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_ALL' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -115,11 +115,11 @@
       <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#0891b2,#06b6d4);">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalSuppliers() }}</h3>
-          <p>Total Suppliers</p>
+          <p>{{ 'DASHBOARD.TOTAL_SUPPLIERS' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-truck-flatbed"></i></div>
         <a routerLink="/supplier" class="small-box-footer border-0 py-2">
-          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_ALL' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -129,11 +129,11 @@
       <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#b45309,#f59e0b);">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalUsers() }}</h3>
-          <p>Total Users</p>
+          <p>{{ 'DASHBOARD.TOTAL_USERS' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-person-fill-gear"></i></div>
         <a routerLink="/user" class="small-box-footer border-0 py-2">
-          View All <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_ALL' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -148,11 +148,11 @@
       <div class="small-box shadow-sm border-0 bg-success-gradient text-white">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalSalesValue() | currency:'USD':'symbol':'1.0-2' }}</h3>
-          <p>Total Revenue</p>
+          <p>{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
         <a routerLink="/sale" class="small-box-footer border-0 py-2">
-          View Sales <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_SALES' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -162,11 +162,11 @@
       <div class="small-box shadow-sm border-0 text-white" style="background: linear-gradient(135deg,#059669,#34d399);">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalSalesCount() }}</h3>
-          <p>Total Sales</p>
+          <p>{{ 'DASHBOARD.TOTAL_SALES' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-receipt"></i></div>
         <a routerLink="/sale" class="small-box-footer border-0 py-2">
-          View Sales <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_SALES' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -176,11 +176,11 @@
       <div class="small-box shadow-sm border-0 bg-warning-gradient text-white">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ totalPurchaseCost() | currency:'USD':'symbol':'1.0-2' }}</h3>
-          <p>Inventory Investment</p>
+          <p>{{ 'DASHBOARD.INVENTORY_INVESTMENT' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-cart-check"></i></div>
         <a routerLink="/purchases" class="small-box-footer border-0 py-2">
-          View Purchases <i class="bi bi-arrow-right-circle ms-1"></i>
+          {{ 'DASHBOARD.VIEW_PURCHASES' | translate }} <i class="bi bi-arrow-right-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -190,11 +190,11 @@
       <div class="small-box shadow-sm border-0 bg-danger-gradient text-white">
         <div class="inner p-3">
           <h3 class="fw-bold">{{ lowStockCount() }}</h3>
-          <p>Low Stock Items</p>
+          <p>{{ 'DASHBOARD.LOW_STOCK_ITEMS' | translate }}</p>
         </div>
         <div class="icon"><i class="bi bi-exclamation-triangle"></i></div>
         <a href="#low-stock-table" class="small-box-footer border-0 py-2">
-          Take Action <i class="bi bi-arrow-down-circle ms-1"></i>
+          {{ 'DASHBOARD.TAKE_ACTION' | translate }} <i class="bi bi-arrow-down-circle ms-1"></i>
         </a>
       </div>
     </div>
@@ -208,8 +208,8 @@
     <div class="col-lg-8">
       <div class="card shadow-sm border-0 mb-4 h-100">
         <div class="card-header bg-white border-0 py-3">
-          <h5 class="card-title fw-bold mb-0">Financial Trends</h5>
-          <span class="text-muted small">Sales vs Purchases over time</span>
+          <h5 class="card-title fw-bold mb-0">{{ 'DASHBOARD.FINANCIAL_TRENDS' | translate }}</h5>
+          <span class="text-muted small">{{ 'DASHBOARD.SALES_VS_PURCHASES' | translate }}</span>
         </div>
         <div class="card-body">
           <div id="revenue-chart" style="min-height: 350px;"></div>
@@ -223,8 +223,8 @@
       <!-- Stock Overview Donut Chart -->
       <div class="card shadow-sm border-0 mb-3" style="min-height: 380px;">
         <div class="card-header bg-white border-0 py-3">
-          <h5 class="card-title fw-bold mb-0">Stock Overview</h5>
-          <span class="text-muted small">In-stock vs Low vs Out</span>
+          <h5 class="card-title fw-bold mb-0">{{ 'DASHBOARD.STOCK_OVERVIEW' | translate }}</h5>
+          <span class="text-muted small">{{ 'DASHBOARD.IN_STOCK_VS' | translate }}</span>
         </div>
         <div class="card-body d-flex justify-content-center align-items-center">
           <div id="stock-donut-chart" style="width: 100%; display: flex; justify-content: center;"></div>
@@ -234,24 +234,24 @@
       <!-- Quick Actions -->
       <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-white border-0 py-3">
-          <h5 class="card-title fw-bold mb-0">Quick Actions</h5>
+          <h5 class="card-title fw-bold mb-0">{{ 'DASHBOARD.QUICK_ACTIONS' | translate }}</h5>
         </div>
         <div class="card-body p-0">
           <div class="list-group list-group-flush">
             <a routerLink="/product" class="list-group-item list-group-item-action border-0 py-3">
-              <i class="bi bi-plus-circle text-primary me-3"></i> Add New Product
+              <i class="bi bi-plus-circle text-primary me-3"></i> {{ 'DASHBOARD.ADD_NEW_PRODUCT' | translate }}
             </a>
             <a routerLink="/sale" class="list-group-item list-group-item-action border-0 py-3">
-              <i class="bi bi-receipt text-success me-3"></i> Record New Sale
+              <i class="bi bi-receipt text-success me-3"></i> {{ 'DASHBOARD.RECORD_NEW_SALE' | translate }}
             </a>
             <a routerLink="/purchases" class="list-group-item list-group-item-action border-0 py-3">
-              <i class="bi bi-truck text-warning me-3"></i> Log New Purchase
+              <i class="bi bi-truck text-warning me-3"></i> {{ 'DASHBOARD.LOG_NEW_PURCHASE' | translate }}
             </a>
             <a routerLink="/supplier" class="list-group-item list-group-item-action border-0 py-3">
-              <i class="bi bi-people text-info me-3"></i> Manage Suppliers
+              <i class="bi bi-people text-info me-3"></i> {{ 'DASHBOARD.MANAGE_SUPPLIERS' | translate }}
             </a>
             <a routerLink="/category" class="list-group-item list-group-item-action border-0 py-3">
-              <i class="bi bi-tags me-3" style="color:#7c3aed"></i> Manage Categories
+              <i class="bi bi-tags me-3" style="color:#7c3aed"></i> {{ 'DASHBOARD.MANAGE_CATEGORIES' | translate }}
             </a>
           </div>
         </div>
@@ -266,10 +266,10 @@
       <div class="card shadow-sm border-0">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
           <h5 class="card-title fw-bold mb-0 text-danger">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>Low Stock Alerts
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ 'DASHBOARD.LOW_STOCK_ALERTS' | translate }}
           </h5>
           <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill">
-            {{ lowStockCount() }} item(s) need restock
+            {{ lowStockCount() }} {{ 'DASHBOARD.ITEMS_NEED_RESTOCK' | translate }}
           </span>
         </div>
         <div class="card-body p-0">
@@ -278,11 +278,11 @@
               <thead class="bg-light text-muted small">
                 <tr>
                   <th class="ps-4">#</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Current Stock</th>
-                  <th>Price</th>
-                  <th class="text-end pe-4">Action</th>
+                  <th>{{ 'DASHBOARD.PRODUCT_NAME' | translate }}</th>
+                  <th>{{ 'DASHBOARD.CATEGORY' | translate }}</th>
+                  <th>{{ 'DASHBOARD.CURRENT_STOCK' | translate }}</th>
+                  <th>{{ 'DASHBOARD.PRICE' | translate }}</th>
+                  <th class="text-end pe-4">{{ 'DASHBOARD.ACTION' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -292,12 +292,21 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="bg-light rounded p-2 me-3">
-                        <i class="bi bi-box text-secondary"></i>
+                        @if (item.img) {
+                        <img [src]="getImageUrl(item.img)" [alt]="item.productName" width="50"
+                          style="object-fit: cover; border-radius: 4px;" (error)="onImageError($event)">
+                        } @else {
+                        <div
+                          style="width: 50px; height: 50px; background: #e9ecef; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid #dee2e6;">
+                          <span style="font-size: 24px;">📦</span>
+                        </div>
+                        }
                       </div>
                       <span class="fw-semibold">{{ item.productName }}</span>
                     </div>
                   </td>
-                  <td><span class="badge bg-light text-dark px-2 py-1">{{ item.categoryId }}</span></td>
+                  <td><span class="badge bg-light text-dark px-2 py-1">{{ $any(item.categoryId).categoryName ||
+                      item.categoryId }}</span></td>
                   <td>
                     <span class="text-danger fw-bold">{{ item.stockQuantity }}</span>
                     <div class="progress mt-1" style="height: 4px; width: 60px;">
@@ -306,14 +315,16 @@
                   </td>
                   <td>{{ item.price | currency }}</td>
                   <td class="text-end pe-4">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Restock</button>
+                    <button routerLink="/product" class="btn btn-sm btn-outline-primary rounded-pill px-3">{{
+                      'DASHBOARD.RESTOCK' | translate
+                      }}</button>
                   </td>
                 </tr>
                 } @empty {
                 <tr>
                   <td colspan="6" class="text-center py-5 text-muted">
                     <i class="bi bi-check-circle text-success fs-1 d-block mb-3"></i>
-                    All stock levels are healthy!
+                    {{ 'DASHBOARD.ALL_STOCK_HEALTHY' | translate }}
                   </td>
                 </tr>
                 }

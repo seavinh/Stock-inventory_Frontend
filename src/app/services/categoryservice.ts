@@ -21,7 +21,7 @@ export class Categoryservice {
 
   updateCategory(id: any, category: any) {
     const url = `${this.apiUrl}/${id}`;
-    return this.http.put<any>(url, category);
+    return this.http.patch<any>(url, category);
   }
 
   deleteCategory(id: any) {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Userservice } from '../services/userservice';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-login',
@@ -32,10 +33,25 @@ export class Login {
             next: () => {
                 this.isLoading = false;
                 this.router.navigate(['/dashboard']);
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login success',
+                        text: 'Welcome to the inventory management system',
+                        confirmButtonColor: '#22c55e'
+                    });
+                }, 1000);
             },
             error: (err) => {
                 this.isLoading = false;
                 this.errorMessage = err.error?.message || 'Invalid username or password.';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login success',
+                    text: 'Welcome to the inventory management system',
+                    confirmButtonColor: '#22c55e'
+                });
             }
         });
     }

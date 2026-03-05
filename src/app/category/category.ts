@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 interface data {
   _id?: string;
   categoryName: string;
+  description?: string;
 }
 
 @Component({
@@ -84,6 +85,7 @@ export class Category implements OnInit {
 
     const categoryData: data = {
       categoryName: categoryName,
+      description: this.newCategoryDescription().trim(),
     };
 
     if (this.editMode() && this.editingCategoryId()) {
@@ -128,6 +130,7 @@ export class Category implements OnInit {
     }
 
     this.newCategoryName.set(category.categoryName);
+    this.newCategoryDescription.set(category.description || '');
     this.editMode.set(true);
     this.editingCategoryId.set(category._id);
     this.showAddForm.set(true);

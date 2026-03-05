@@ -499,3 +499,65 @@
 .badge.bg-primary {
     background: linear-gradient(135deg, #667eea, #764ba2) !important;
 }
+
+/* ── UI Theme Adapters ── */
+.responsive-card {
+    transition: background 0.3s, color 0.3s;
+}
+
+.responsive-header {
+    background-color: #212529;
+    /* Bootstrap dark default */
+    color: #ffffff;
+    transition: background 0.3s, color 0.3s;
+}
+
+.responsive-table-header {
+    background-color: #212529;
+    /* Built-in bg-dark default */
+    color: #ffffff !important;
+    transition: background 0.3s, color 0.3s;
+}
+
+.responsive-table-header th {
+    color: #ffffff !important;
+    background-color: #212529 !important;
+    border-color: #373b3e !important;
+}
+
+/* ── Dark Mode Context Adjustments ── */
+:host-context(body.dark-mode) .responsive-card {
+    background-color: #1e293b !important;
+    color: #e2e8f0;
+    border-color: #334155 !important;
+}
+
+:host-context(body.dark-mode) .responsive-header {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #e2e8f0;
+}
+
+:host-context(body.dark-mode) .responsive-table-header th {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+    border-bottom: 2px solid #334155 !important;
+}
+
+:host-context(body.dark-mode) .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+:host-context(body.dark-mode) .table-hover>tbody>tr:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:host-context(body.dark-mode) .table td {
+    color: #e2e8f0;
+    border-color: #334155;
+    background-color: transparent !important;
+}
+
+:host-context(body.dark-mode) .text-muted {
+    color: #94a3b8 !important;
+}

@@ -8,13 +8,14 @@ import { Supplierservice } from '../services/supplierservice';
 import { Categoryservice } from '../services/categoryservice';
 import { Userservice } from '../services/userservice';
 import { forkJoin, of, catchError } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 declare var ApexCharts: any;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyPipe],
+  imports: [CommonModule, RouterLink, CurrencyPipe, TranslateModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -201,5 +202,24 @@ export class Dashboard implements OnInit, AfterViewInit {
     return Object.keys(grouped)
       .map(date => ({ x: new Date(date).getTime(), y: grouped[date] }))
       .sort((a, b) => a.x - b.x);
+  }
+
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return 'assets/placeholder.png';
+    }
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    const baseUrl = 'http://localhost:3000';
+    if (imagePath.startsWith('/')) {
+      return `${baseUrl}${imagePath}`;
+    }
+    return `${baseUrl}/${imagePath}`;
+  }
+
+  onImageError(event: any) {
+    event.target.src = 'assets/placeholder.png';
+    event.target.onerror = null;
   }
 }

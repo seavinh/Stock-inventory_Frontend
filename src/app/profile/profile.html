@@ -12,8 +12,24 @@
         <!-- ── LEFT: Profile Card ── -->
         <div class="profile-card">
             <!-- Avatar -->
-            <div class="avatar-circle">{{ getInitials() }}</div>
-            <h4 class="profile-name">{{ user()?.userName }}</h4>
+            <div class="avatar-wrapper position-relative d-inline-block">
+                @if (user()?.profileImage) {
+                <img [src]="getImageUrl(user()?.profileImage) + '?t=' + imageTimestamp()" alt="Profile"
+                    class="profile-image rounded-circle border border-3 border-primary shadow-sm"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+                } @else {
+                <div class="avatar-circle"
+                    style="width: 120px; height: 120px; line-height: 120px; font-size: 2.5rem; display: inline-block;">
+                    {{ getInitials() }}</div>
+                }
+                <button class="upload-btn btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0"
+                    style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transform: translate(10%, 10%);"
+                    (click)="fileInput.click()" title="Upload Image">
+                    <i class="bi bi-camera-fill"></i>
+                </button>
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+            </div>
+            <h4 class="profile-name mt-3">{{ user()?.userName }}</h4>
             <span class="role-badge" [class]="getRoleBadgeClass()">
                 {{ user()?.role | uppercase }}
             </span>

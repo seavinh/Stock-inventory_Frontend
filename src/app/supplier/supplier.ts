@@ -139,7 +139,7 @@ export class SupplierComponent implements OnInit {
       if (result.isConfirmed) {
         this.supplierservice.deleteSupplier(supplier._id!).subscribe({
           next: () => {
-            Swal.fire({ title: '✅ លុបអ្នកផ្គត់ផ្គង់បានជោគជ័យ!', icon: 'success', draggable: true });
+            Swal.fire({ title: '✅ លុបអ្នកផ្គត់ផ្គង់បានជោគជ័យ!', color: '#d33', icon: 'success', draggable: true });
             this.getAll();
           },
           error: (err) => {

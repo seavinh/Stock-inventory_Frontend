@@ -58,6 +58,11 @@ export class Userservice {
   updateProfile(data: { userName?: string; phoneNumber?: string; currentPassword?: string; newPassword?: string }): Observable<any> {
     return this.http.patch<any>(`${this.apiUri}/profile/me`, data);
   }
+
+  updateProfileImage(formData: FormData): Observable<any> {
+    return this.http.patch<any>(`${this.apiUri}/profile/me/image`, formData);
+  }
+
   register(userName: string, password: string, role: string, phoneNumber: string): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.apiUrl}/register`, { userName, password, role, phoneNumber })
       .pipe(tap(response => this.saveToken(response)));
@@ -117,7 +122,7 @@ export class Userservice {
           localStorage.setItem(this.userIdKey, response._id);
         }
       }
-      this.currentUserSubject.next(response.user);
+      this.currentUserSubject.next(response);
     }
   }
 

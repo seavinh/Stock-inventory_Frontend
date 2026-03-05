@@ -433,3 +433,33 @@ body.dark-mode .skeleton-box {
             rgba(255, 255, 255, 0.1) 60%,
             rgba(255, 255, 255, 0)) !important;
 }
+
+/* ════════════════════════════════════════════
+   SWEETALERT 2 DARK BASE 
+   ════════════════════════════════════════════ */
+body.dark-mode div.swal2-popup {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155;
+}
+
+body.dark-mode div.swal2-title {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode div.swal2-html-container {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode button.swal2-confirm {
+    background-color: #6366f1 !important;
+}
+
+body.dark-mode button.swal2-cancel {
+    background-color: #475569 !important;
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode button.swal2-deny {
+    background-color: #dc2626 !important;
+}

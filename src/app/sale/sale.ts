@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, ElementRef, ViewChild, AfterViewInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ElementRef, ViewChild, AfterViewInit, PLATFORM_ID, NgModule } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
@@ -28,7 +28,8 @@ export class Sale implements OnInit {
   private userService = inject(Userservice);
   private bakongService = inject(Bakongservice);
   private platformId = inject(PLATFORM_ID);
-
+  // isDarkMode = signal(false);
+  // isSwitchingTheme = signal(false);
   @ViewChild('qrCanvas') qrCanvasRef!: ElementRef<HTMLCanvasElement>;
 
   // ── Data lists ──
@@ -56,6 +57,10 @@ export class Sale implements OnInit {
   qrChecking = signal(false);
   qrPollingHandle: any = null;
 
+  // ── QR Timer ──
+  qrTimeLeft = signal(300);
+  qrTimerHandle: any = null;
+
   // ── Computed ──
   cartTotal = computed(() =>
     this.cart().reduce((sum, item) => sum + item.totalPrice, 0)
@@ -64,6 +69,11 @@ export class Sale implements OnInit {
     this.cart().reduce((sum, item) => sum + item.quantity, 0)
   );
   change = computed(() => this.amountPaid() - this.cartTotal());
+  qrTimeLeftFormatted = computed(() => {
+    const mins = Math.floor(this.qrTimeLeft() / 60);
+    const secs = this.qrTimeLeft() % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  });
 
   // ── Search ──
   saleSearch = signal('');
@@ -199,13 +209,14 @@ export class Sale implements OnInit {
       if (result.isConfirmed) {
         this.isLoading.set(true);
         this.saleService.createSale(payload).subscribe({
-          next: () => {
+          next: (res: any) => {
             this.isLoading.set(false);
-            Swal.fire({ title: '✅ ការលក់បានជោគជ័យ!', html: `<b>Total: $${this.cartTotal().toFixed(2)}</b>`, icon: 'success', timer: 2000, showConfirmButton: false });
+            const saleData = res.sale; // from populated Sale
             this.clearCart();
             this.activeView.set('list');
             this.loadSales();
             this.loadProducts();
+            this.printReceipt(saleData, true);
           },
           error: (err) => {
             this.isLoading.set(false);
@@ -244,6 +255,8 @@ export class Sale implements OnInit {
         setTimeout(() => this.renderQRCode(resp.qrString), 100);
         // Start auto-polling every 5 seconds
         this.startPolling();
+        // Start 5 min countdown
+        this.startTimer();
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -281,6 +294,29 @@ export class Sale implements OnInit {
     }
   }
 
+  // ─── Countdown Timer ──────────────────────────────────────────────────────────
+  private startTimer() {
+    this.stopTimer();
+    this.qrTimeLeft.set(300);
+    this.qrTimerHandle = setInterval(() => {
+      const current = this.qrTimeLeft();
+      if (current <= 1) {
+        this.stopTimer();
+        this.closeQRModal();
+        Swal.fire({ icon: 'warning', title: 'ផុតកំណត់', text: 'ការទូទាត់តាមរយៈ QR ត្រូវបានផុតកំណត់។ សូមព្យាយាមម្តងទៀត។' });
+      } else {
+        this.qrTimeLeft.set(current - 1);
+      }
+    }, 1000);
+  }
+
+  private stopTimer() {
+    if (this.qrTimerHandle) {
+      clearInterval(this.qrTimerHandle);
+      this.qrTimerHandle = null;
+    }
+  }
+
   verifyQRPayment(manual = true) {
     if (manual) this.qrChecking.set(true);
     this.bakongService.checkPayment(this.qrSessionId()).subscribe({
@@ -288,18 +324,13 @@ export class Sale implements OnInit {
         if (manual) this.qrChecking.set(false);
         if (resp.isPaid) {
           this.stopPolling();
+          this.stopTimer();
           this.closeQRModal();
-          Swal.fire({
-            title: '✅ ការទូទាត់បានជោគជ័យ!',
-            html: `<b>$${this.qrAmount().toFixed(2)}</b> received via Bakong QR.<br>Sale recorded successfully.`,
-            icon: 'success',
-            timer: 3000,
-            showConfirmButton: false,
-          });
           this.clearCart();
           this.activeView.set('list');
           this.loadSales();
           this.loadProducts();
+          this.printReceipt(resp.sale, false);
         }
       },
       error: (err) => {
@@ -311,6 +342,7 @@ export class Sale implements OnInit {
 
   closeQRModal() {
     this.stopPolling();
+    this.stopTimer();
     this.showQRModal.set(false);
     this.qrSessionId.set('');
     this.qrString.set('');
@@ -348,9 +380,17 @@ export class Sale implements OnInit {
 
   viewSaleDetails(sale: any) {
     const items = (sale.saleItemId || []).map((item: any) => {
-      const name = item.productId?.productName || 'Unknown';
+      const productObj = item.productId || {};
+      const name = productObj.productName || 'Unknown';
+      const imgUrl = this.getProductImage(productObj);
+
       return `<tr>
-        <td>${name}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="${imgUrl}" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.src='/assets/assets/img/default-product.png'" />
+            <span style="font-weight: 500">${name}</span>
+          </div>
+        </td>
         <td>${item.quantity}</td>
         <td>$${(item.price || 0).toFixed(2)}</td>
         <td>$${(item.totalPrice || 0).toFixed(2)}</td>
@@ -387,6 +427,140 @@ export class Sale implements OnInit {
   }
 
   getProductImage(product: ProductModel): string {
-    return product.img ? `http://localhost:3000/uploads/${product.img}` : '/assets/assets/img/default-product.png';
+    if (!product.img) {
+      return '/assets/assets/img/default-product.png';
+    }
+    if (product.img.startsWith('http://') || product.img.startsWith('https://')) {
+      return product.img;
+    }
+    const baseUrl = 'http://localhost:3000';
+    if (product.img.startsWith('/')) {
+      return `${baseUrl}${product.img}`;
+    }
+    // Some endpoints pre-pend 'uploads/' already, so handle gracefully
+    if (product.img.startsWith('uploads/')) {
+      return `${baseUrl}/${product.img}`;
+    }
+    return `${baseUrl}/uploads/${product.img}`;
+  }
+
+  // ════════════ PRINT RECEIPT ════════════
+
+  printReceipt(sale: any, fromCash: boolean = false) {
+    const items = (sale.saleItemId || []).map((item: any) => {
+      const name = item.productId?.productName || 'Unknown';
+      const quantity = item.quantity || 1;
+      const price = item.price || 0;
+      const total = item.totalPrice || (price * quantity);
+      return `<tr>
+        <td style="text-align: left; padding: 4px 0;">${name}</td>
+        <td style="text-align: center; padding: 4px 0;">${quantity}</td>
+        <td style="text-align: right; padding: 4px 0;">$${price.toFixed(2)}</td>
+        <td style="text-align: right; padding: 4px 0;">$${total.toFixed(2)}</td>
+      </tr>`;
+    }).join('');
+
+    // Fetch the cashier name from the populated userId obj. If empty, try localStorage
+    const cashierName = sale.userId?.userName || localStorage.getItem('username') || 'Cashier';
+    const dateStr = new Date(sale.createdAt || Date.now()).toLocaleString();
+    const payment = (sale.paymentType || 'cash').toUpperCase();
+    const grandTotal = sale.salePrice || 0;
+
+    let paymentDetails = '';
+    if (fromCash && payment === 'CASH') {
+      paymentDetails = `
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span>Amount Paid:</span>
+            <span>$${this.amountPaid().toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span>Change:</span>
+            <span>$${this.change().toFixed(2)}</span>
+          </div>
+       `;
+    }
+
+    const receiptHtml = `
+      <div id="print-area" style="font-family: 'Courier New', Courier, monospace; max-width: 300px; margin: 0 auto; color: currentColor;">
+        <div style="text-align: center; border-bottom: 2px dashed currentColor; padding-bottom: 10px; margin-bottom: 10px;">
+          <h2 style="margin: 0; font-size: 24px;">INVENTORY POS</h2>
+          <p style="margin: 5px 0 0; font-size: 14px;">Official Receipt</p>
+        </div>
+        
+        <div style="font-size: 14px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span>Date:</span>
+            <span>${dateStr}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Cashier:</span>
+            <span><b>${cashierName}</b></span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Payment:</span>
+            <span>${payment}</span>
+          </div>
+        </div>
+        
+        <table style="width: 100%; font-size: 14px; border-top: 1px dashed currentColor; border-bottom: 1px dashed currentColor; margin-bottom: 10px; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px dashed currentColor;">
+              <th style="padding: 4px 0; text-align: left;">Item</th>
+              <th style="padding: 4px 0; text-align: center;">Qty</th>
+              <th style="padding: 4px 0; text-align: right;">Price</th>
+              <th style="padding: 4px 0; text-align: right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items}
+          </tbody>
+        </table>
+        
+        <div style="font-size: 16px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <span>Grand Total:</span>
+            <span>$${grandTotal.toFixed(2)}</span>
+          </div>
+          ${paymentDetails}
+        </div>
+        
+        <div style="text-align: center; border-top: 2px dashed currentColor; padding-top: 10px; font-size: 12px;">
+          <p style="margin: 0;">Thank you for your purchase!</p>
+          <p style="margin: 0;">Please come again</p>
+        </div>
+      </div>
+    `;
+
+    Swal.fire({
+      html: receiptHtml,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-printer"></i> Print Receipt',
+      cancelButtonText: 'Done',
+      confirmButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executePrint(receiptHtml);
+      }
+    });
+  }
+
+  private executePrint(htmlContent: string) {
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            @media print {
+              @page { margin: 0; }
+              body { margin: 1cm; padding: 20px; }
+            }
+          </style>
+        </head>
+        <body onload="window.print(); setTimeout(() => window.close(), 500);">${htmlContent}</body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 }

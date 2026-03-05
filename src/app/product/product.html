@@ -1,16 +1,3 @@
-<!-- Popup Dialog -->
-<app-popup-dialog
-  [isVisible]="showDeletePopup"
-  [title]="'លុបផលិតផល'"
-  [message]="'តើអ្នកប្រាកដថាចង់លុបផលិតផល ' + (selectedProductForDelete?.productName || '') + ' មែនទេ?'"
-  [confirmText]="'លុប'"
-  [cancelText]="'បោះបង់'"
-  [icon]="'bi bi-trash-fill'"
-  [iconClass]="'danger'"
-  (confirmed)="onDeleteConfirmed()"
-  (cancelled)="onDeleteCancelled()">
-</app-popup-dialog>
-
 <div class="app-content">
     <div class="container-fluid">
         <div class="row mb-3">
@@ -70,10 +57,10 @@
                             <td>${{ item.cost | number:'1.2-2' }}</td>
                             <td>${{ item.price | number:'1.2-2' }}</td>
                             <td>
-                                <span [ngClass]="{
-                                    'badge bg-danger': item.stockQuantity < 10,
-                                    'badge bg-warning text-dark': item.stockQuantity >= 10 && item.stockQuantity < 50,
-                                    'badge bg-success': item.stockQuantity >= 50
+                                <span class="badge" [ngClass]="{
+                                    'bg-danger': (item.stockQuantity * 1) < 10,
+                                    'bg-warning text-dark': (item.stockQuantity * 1) >= 10 && (item.stockQuantity * 1) < 50,
+                                    'bg-success': (item.stockQuantity * 1) >= 50
                                 }">
                                     {{ item.stockQuantity }}
                                 </span>
@@ -211,8 +198,13 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetForm()">
                     ❌ Close
                 </button>
-                <button type="button" class="btn btn-primary" (click)="onSaveProduct()">
+                <button type="button" class="btn btn-primary" (click)="onSaveProduct()" [disabled]="isSaving">
+                    @if (isSaving) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    {{ isEditMode ? 'កំពុងកែប្រែ...' : 'កំពុងរក្សាទុក...' }}
+                    } @else {
                     {{ isEditMode ? '💾 Update' : '💾 Save' }}
+                    }
                 </button>
             </div>
         </div>
