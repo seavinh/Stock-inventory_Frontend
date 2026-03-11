@@ -1,6 +1,6 @@
 export const enviroment = {
   production: false,
-  apiBase: "https://stock-inventory-backend-9.onrender.com/api",
+  apiBase: "https://stock-inventory-backend-10.onrender.com/api",
   apiEndpoints: {
     login: '/login',
     register: '/register',
