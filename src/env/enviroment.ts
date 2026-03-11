@@ -1,7 +1,7 @@
 export const enviroment = {
-    production: false,
-    apiBase:"http://localhost:3000/api",
-    apiEndpoints: {
+  production: false,
+  apiBase: "https://stock-inventory-backend-5.onrender.com/api",
+  apiEndpoints: {
     login: '/login',
     register: '/register',
     users: '/api/users',
