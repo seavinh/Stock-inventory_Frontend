@@ -18,7 +18,7 @@ interface ApiResponse {
   providedIn: 'root',
 })
 export class Userservice {
-  private apiUrl = 'http://localhost:3000/api'; // Change to your backend URL
+  private apiUrl = enviroment.apiBase; // Change to your backend URL
   private tokenKey = 'userToken';
   private roleKey = 'userRole';
   private userIdKey = 'userId';
