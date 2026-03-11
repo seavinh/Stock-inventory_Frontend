@@ -48,14 +48,16 @@
             </div>
 
             <!-- Error -->
-            <div class="lp-error" *ngIf="errorMessage">
+            @if(errorMessage){
+            <div class="lp-error">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span>{{ errorMessage }}</span>
             </div>
+            }
 
             <!-- Button -->
-            <button type="submit" class="lp-btn" [disabled]="loginForm.invalid || isLoading">
-                @if (isLoading) {
+            <button type="submit" class="lp-btn" [disabled]="loginForm.invalid || isLoading()">
+                @if (isLoading()) {
                 <span class="lp-spinner"></span>
                 <span>Signing in…</span>
                 } @else {

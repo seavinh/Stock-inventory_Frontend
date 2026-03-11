@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 export class Login {
     loginData = { userName: '', password: '' };
     errorMessage = '';
-    isLoading = false;
+    isLoading = signal(false);
     showPassword = false;
     rememberMe = false;
 
@@ -26,12 +26,12 @@ export class Login {
     }
 
     onLogin() {
-        this.isLoading = true;
+        this.isLoading.set(true);
         this.errorMessage = '';
 
         this.userService.login(this.loginData.userName, this.loginData.password).subscribe({
             next: () => {
-                this.isLoading = false;
+                this.isLoading.set(false);
                 this.router.navigate(['/dashboard']);
                 setTimeout(() => {
                     Swal.fire({
@@ -43,15 +43,9 @@ export class Login {
                 }, 1000);
             },
             error: (err) => {
-                this.isLoading = false;
+                this.isLoading.set(false);
+                console.log("Error")
                 this.errorMessage = err.error?.message || 'Invalid username or password.';
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Login success',
-                    text: 'Welcome to the inventory management system',
-                    confirmButtonColor: '#22c55e'
-                });
             }
         });
     }
